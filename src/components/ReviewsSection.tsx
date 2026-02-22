@@ -36,6 +36,9 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
     'https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?w=300&h=300&fit=crop',
   ];
 
+  // Total items = "All" + artists
+  const totalItems = artists.length + 1;
+
   const updatePillPosition = useCallback(() => {
     const key = selectedArtist ?? '_all';
     const btn = buttonRefs.current.get(key);
@@ -87,20 +90,17 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
         </div>
 
         {/* Artist Avatars with Jelly Pill */}
-        <div className="relative" ref={artistRowRef}>
-          {/* Sliding Jelly Pill */}
+        <div className="relative pb-5" ref={artistRowRef}>
+          {/* Sliding Jelly Pill — z-index 5: above avatars row, below reviews container */}
           {pillStyle && (
             <div
               className="absolute pointer-events-none"
               style={{
                 left: pillStyle.left,
                 width: pillStyle.width,
-                top: -6,
-                bottom: -18,
-                backgroundColor: 'hsl(var(--champagne))',
-                border: '1.5px solid hsl(var(--bronze) / 0.2)',
-                borderBottom: 'none',
-                boxShadow: '0 2px 12px -2px hsl(var(--bronze) / 0.15)',
+                top: -8,
+                bottom: 0,
+                background: '#F8F1E9',
                 borderTopLeftRadius: 45,
                 borderTopRightRadius: 45,
                 borderBottomLeftRadius: 0,
@@ -108,31 +108,39 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
                 transition: 'left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s ease',
                 animation: isJiggling ? 'jelly 0.6s ease' : 'none',
                 transformOrigin: 'bottom center',
-                zIndex: 0,
+                zIndex: 5,
               }}
             />
           )}
 
-          <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 items-end justify-center relative z-10">
+          {/* Avatars row — z-index 10: above the pill so they're clickable */}
+          <div
+            className="flex overflow-x-auto scrollbar-hide items-end justify-between px-2"
+            style={{ position: 'relative', zIndex: 10 }}
+          >
             {/* All button */}
             <button
               onClick={() => onSelectArtist(null)}
               className="flex flex-col items-center gap-2 flex-shrink-0"
+              style={{ width: `${100 / totalItems}%` }}
             >
               <div ref={setRef('_all')}>
                 <div
-                  className={`rounded-full bg-champagne flex items-center justify-center text-[11px] font-sans font-bold text-truffle transition-all duration-300 ease-out ${
+                  className={`rounded-full bg-champagne flex items-center justify-center text-[11px] font-sans font-bold transition-all duration-300 ease-out mx-auto ${
                     !selectedArtist
-                      ? 'w-16 h-16 ring-2 ring-accent shadow-md scale-110'
-                      : 'w-14 h-14 opacity-60 grayscale-[40%]'
+                      ? 'w-16 h-16 ring-2 ring-accent shadow-md scale-110 text-truffle'
+                      : 'w-14 h-14 opacity-60 grayscale-[40%] text-muted-foreground'
                   }`}
                 >
                   ALL
                 </div>
               </div>
-              <span className={`text-[10px] font-sans font-medium uppercase tracking-wider transition-colors duration-200 ${
-                !selectedArtist ? 'text-truffle font-semibold' : 'text-muted-foreground'
-              }`}>
+              <span
+                className={`text-[10px] font-sans uppercase tracking-wider transition-colors duration-200 ${
+                  !selectedArtist ? 'font-bold' : 'font-medium text-muted-foreground'
+                }`}
+                style={{ color: !selectedArtist ? '#2C1E1A' : undefined }}
+              >
                 All
               </span>
             </button>
@@ -144,10 +152,11 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
                   key={artist.id}
                   onClick={() => onSelectArtist(isSelected ? null : artist.id)}
                   className="flex flex-col items-center gap-2 flex-shrink-0"
+                  style={{ width: `${100 / totalItems}%` }}
                 >
                   <div ref={setRef(artist.id)}>
                     <div
-                      className={`rounded-full overflow-hidden transition-all duration-300 ease-out ${
+                      className={`rounded-full overflow-hidden transition-all duration-300 ease-out mx-auto ${
                         isSelected
                           ? 'w-16 h-16 ring-2 ring-accent shadow-md scale-110'
                           : 'w-14 h-14 opacity-60 grayscale-[40%]'
@@ -156,9 +165,12 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
                       <img src={artist.avatar} alt={artist.name} className="w-full h-full object-cover" />
                     </div>
                   </div>
-                  <span className={`text-[10px] font-sans font-medium uppercase tracking-wider whitespace-nowrap transition-colors duration-200 ${
-                    isSelected ? 'text-truffle font-semibold' : 'text-muted-foreground'
-                  }`}>
+                  <span
+                    className={`text-[10px] font-sans uppercase tracking-wider whitespace-nowrap transition-colors duration-200 ${
+                      isSelected ? 'font-bold' : 'font-medium text-muted-foreground'
+                    }`}
+                    style={{ color: isSelected ? '#2C1E1A' : undefined }}
+                  >
                     {artist.name}
                   </span>
                 </button>
@@ -168,19 +180,17 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
         </div>
       </div>
 
-      {/* Reviews Container — overlaps the pill bottom for seamless connection */}
+      {/* Reviews Container — z-index 1, negative top margin to merge seamlessly with pill */}
       <div
-        className="mx-3 p-1"
+        className="mx-3 p-1 relative"
         style={{
-          backgroundColor: 'hsl(var(--champagne))',
-          border: '1.5px solid hsl(var(--bronze) / 0.2)',
-          borderTop: 'none',
-          boxShadow: '0 4px 16px -4px hsl(var(--bronze) / 0.12)',
+          background: '#F8F1E9',
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           borderBottomLeftRadius: 20,
           borderBottomRightRadius: 20,
           marginTop: -16,
+          zIndex: 1,
           animation: isJiggling ? 'jelly-container 0.5s ease' : 'none',
           transformOrigin: 'top center',
         }}
@@ -188,15 +198,16 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
         {/* Header + Rating + Filters */}
         <div className="px-4 pt-5 pb-2">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-serif text-lg text-truffle">
+            <h3 className="font-serif text-lg" style={{ fontWeight: 400 }}>
               {currentArtist ? (
                 <>
-                  <span>{currentArtist.name.split('.')[0]}.</span>{' '}
-                  <span className="text-bronze italic">Reviews</span>
+                  <span style={{ color: '#2C1E1A' }}>{currentArtist.name.split('.')[0]}.</span>{' '}
+                  <span style={{ color: '#9A7B6D', fontStyle: 'italic' }}>Reviews</span>
                 </>
               ) : (
                 <>
-                  All <span className="text-bronze italic">Reviews</span>
+                  <span style={{ color: '#2C1E1A' }}>All</span>{' '}
+                  <span style={{ color: '#9A7B6D', fontStyle: 'italic' }}>Reviews</span>
                 </>
               )}
             </h3>
