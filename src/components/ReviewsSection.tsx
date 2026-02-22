@@ -98,6 +98,9 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
                 top: -6,
                 bottom: -18,
                 backgroundColor: 'hsl(var(--champagne))',
+                border: '1.5px solid hsl(var(--bronze) / 0.2)',
+                borderBottom: 'none',
+                boxShadow: '0 2px 12px -2px hsl(var(--bronze) / 0.15)',
                 borderTopLeftRadius: 45,
                 borderTopRightRadius: 45,
                 borderBottomLeftRadius: 0,
@@ -170,6 +173,9 @@ const ReviewsSection = ({ artists, reviews, selectedArtist, onSelectArtist }: Re
         className="mx-3 p-1"
         style={{
           backgroundColor: 'hsl(var(--champagne))',
+          border: '1.5px solid hsl(var(--bronze) / 0.2)',
+          borderTop: 'none',
+          boxShadow: '0 4px 16px -4px hsl(var(--bronze) / 0.12)',
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           borderBottomLeftRadius: 20,
